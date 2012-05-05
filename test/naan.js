@@ -38,3 +38,10 @@ exports['curryArgsPosition'] = function(beforeExit, assert) {
   assert.equal(multiply(5), multx5x());
 }
 
+exports['curryEntagle'] = function(beforeExit, assert) {
+  var multx4x5x6x = naan.ecurry(multiply, [4, 5, 6], [1, 3, 5]);
+  assert.equal(multiply(1, 4, 2, 5, 3, 6), multx4x5x6x(1, 2, 3));
+  assert.equal(multiply(1, 4, 2, 5, 6), multx4x5x6x(1, 2));
+  assert.equal(multiply(4, 4, 5, 6), multx4x5x6x(4));
+  assert.equal(multiply(4, 5, 6), multx4x5x6x());
+}

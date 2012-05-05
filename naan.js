@@ -12,6 +12,11 @@ function curry(fn, curryArgs, pos) {
       opargs = curryArgs.concat(opargs.slice.call(arguments));
     } else if (pos === false || arguments.length < pos) {
       opargs = opargs.slice.call(arguments).concat(curryArgs);
+    } else if (Array.isArray(pos)) {
+      opargs = opargs.slice.call(arguments);
+      for (index in pos) {
+        opargs.splice(pos[index], 0, curryArgs[index]);
+      }
     } else {
       opargs = opargs.concat(
         opargs.slice.call(arguments, 0, pos),
@@ -50,3 +55,5 @@ function positionCurry(fn, args, pos) {
   }
   return curry(fn, args, pos);
 }
+
+exports.entangleCurry = exports.ecurry = curry;
