@@ -6,6 +6,12 @@ function multiply() {
   });
 }
 
+function delayedNumber(delay, number, callback) {
+  setTimeout(function() {
+    callback(null, number);
+  }, delay);
+}
+
 exports['curry'] = function(beforeExit, assert) {
   var mult45 = naan.curry(multiply, 4, 5);
   assert.equal(multiply(4, 5, 6), mult45(6));
@@ -44,4 +50,33 @@ exports['curryEntagle'] = function(beforeExit, assert) {
   assert.equal(multiply(1, 4, 2, 5, 6), multx4x5x6x(1, 2));
   assert.equal(multiply(4, 4, 5, 6), multx4x5x6x(4));
   assert.equal(multiply(4, 5, 6), multx4x5x6x());
+}
+
+exports['cook'] = function(beforeExit, assert) {
+  var find10 = naan.curry(delayedNumber, 50, 10);
+  var find20 = naan.curry(delayedNumber, 50, 20);
+
+  var cookedmult = naan.cook(multiply, [find10, find20]);
+  cookedmult(function(err, value) {
+    assert.ok(!err);
+    assert.equal(multiply(10, 20), value);
+  });
+}
+
+exports['complicated cooking'] = function(be, assert) {
+  var complmult = function(x, y, callback, z, n) {
+    delayedNumber(50, 10, function(err, j) {
+      callback(x * y * z * n * j);
+    });
+  }
+  
+  find5 = naan.curry(delayedNumber, 20, 5);
+  find6 = naan.curry(delayedNumber, 20, 6);
+
+  var ccook = naan.cook(complmult, [find5, find6], [1, 3], 2);
+  var extraComplCook = naan.rcurry(ccook, 8);
+  extraComplCook(2, function(err, value) {
+    assert.ok(!err);
+    assert.equal(value, multiply(2, 5, 6, 8, 10));
+  });
 }
