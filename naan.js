@@ -9,9 +9,9 @@ function curry(fn, curryArgs, pos) {
   return function() {
     var opargs = [];
     if (pos === undefined || pos === true || pos <= 0) {
-      opargs = opargs.concat(curryArgs, opargs.slice.call(arguments));
+      opargs = curryArgs.concat(opargs.slice.call(arguments));
     } else if (arguments.length < position || pos === false) {
-      opargs = opargs.concat(opargs.slice.call(arguments), curryArgs);
+      opargs = opargs.slice.call(arguments).concat(curryArgs);
     } else {
       opargs = opargs.concat(
         opargs.slice.call(arguments, 0, pos),
