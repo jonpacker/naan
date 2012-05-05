@@ -26,3 +26,15 @@ exports['curryArgsRight'] = function(beforeExit, assert) {
   assert.equal(multiply(2, 3, 4, 5, 6), multx56(2, 3, 4));
 }
 
+exports['curryArgsPosition'] = function(beforeExit, assert) {
+  var multxx56x = naan.ncurry(multiply, [5, 6], 2);
+  assert.equal(multiply(3, 4, 5, 6, 7, 8), multxx56x(3, 4, 7, 8));
+  assert.equal(multiply(3, 4, 5, 6), multxx56x(3, 4));
+  assert.equal(multiply(3, 5, 6), multxx56x(3));
+
+  var multx5x = naan.ncurry(multiply, 5, 1);
+  assert.equal(multiply(4, 5, 6), multx5x(4, 6));
+  assert.equal(multiply(4, 5), multx5x(4));
+  assert.equal(multiply(5), multx5x());
+}
+

@@ -10,7 +10,7 @@ function curry(fn, curryArgs, pos) {
     var opargs = [];
     if (pos === undefined || pos === true || pos <= 0) {
       opargs = curryArgs.concat(opargs.slice.call(arguments));
-    } else if (arguments.length < position || pos === false) {
+    } else if (pos === false || arguments.length < pos) {
       opargs = opargs.slice.call(arguments).concat(curryArgs);
     } else {
       opargs = opargs.concat(
@@ -41,4 +41,12 @@ function curryArgs(fn, args) {
 exports.rightCurryArgs = exports.rcurrya =
 function rightCurryArgs(fn, args) {
   return curry(fn, args, false);
+}
+
+exports.positionCurry = exports.ncurry = exports.pcurry =
+function positionCurry(fn, args, pos) {
+  if (!Array.isArray(args)) {
+    args = [ args ];
+  }
+  return curry(fn, args, pos);
 }
