@@ -1,0 +1,24 @@
+{
+  "author": "Jon Packer <contact@jonpacker.com> (http://www.jonpacker.com)",
+  "name": "naan",
+  "description": "async and flexible currying for js",
+  "version": "1.0.1",
+  "homepage": "https://github.com/jonpacker/naan",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jonpacker/naan.git"
+  },
+  "main": "naan.js",
+  "scripts": {
+    "test": "expresso"
+  },
+  "engines": {
+    "node": "~0.6.11"
+  },
+  "dependencies": {
+    "async": "*"
+  },
+  "devDependencies": {
+    "expresso": "*"
+  }
+}
