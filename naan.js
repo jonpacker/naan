@@ -9,24 +9,7 @@ var async = require('async');
 //             then the args are added at the end
 function curry(fn, curryArgs, pos) {
   return function() {
-    var opargs = [];
-    if (pos === undefined || pos === true || pos === 0 || pos < 0) {
-      opargs = curryArgs.concat(opargs.slice.call(arguments));
-    } else if (pos === false || arguments.length < pos) {
-      opargs = opargs.slice.call(arguments).concat(curryArgs);
-    } else if (Array.isArray(pos)) {
-      opargs = opargs.slice.call(arguments);
-      for (index in pos) {
-        opargs.splice(pos[index], 0, curryArgs[index]);
-      }
-    } else {
-      opargs = opargs.concat(
-        opargs.slice.call(arguments, 0, pos),
-        curryArgs,
-        opargs.slice.call(arguments, pos)
-      );
-    }
-    return fn.apply(this, opargs);
+    return fn.apply(this, garnish(arguments, curryArgs, pos));
   }
 }
 
@@ -52,9 +35,12 @@ function curry(fn, curryArgs, pos) {
 //
 // callbackPosition Optional. The location in the parameter list of the
 //                  `fn`'s callback after the values from the cooked
-//                  ingredients are added. If this is falsy or negative, it is
-//                  assumed to be the last parameter in the list. If you specify
-//                  this parameter you must specify `recipe` aswell.
+//                  ingredients are added. If this is falsy or negative, it
+//                  assumes the last parameter in the list. If null or false, it
+//                  indicates `fn` doesn't know about the callback so `cook`
+//                  should call it manually. If false, it indicates that
+//                  callback should /not/ be passed to `fn`. If you specify this
+//                  parameter you must specify `recipe` aswell.
 //
 // noParallel       Optional. If set to true, the `ingredients` functions are
 //                  run in series, rather than parallel. If you specify this
@@ -63,6 +49,7 @@ function curry(fn, curryArgs, pos) {
 exports.cook =
 function cook(fn, ingredients, recipe, callbackPosition, noParallel) {
   var oven = noParallel ? async.series : async.parallel;
+  var originalCbPosition = callbackPosition;
   if (!Array.isArray(ingredients)) {
     ingredients = [ ingredients ];
   }
@@ -87,6 +74,12 @@ function cook(fn, ingredients, recipe, callbackPosition, noParallel) {
     }
 
     var callback = smorgasbord[callbackPosition];
+    if (originalCbPosition === false) {
+      smorgasbord = [].concat(
+        smorgasbord.slice(0, callbackPosition),
+        smorgasbord.slice(callbackPosition + 1)
+      );
+    }
 
     if (typeof callback !== 'function') {
       return;
@@ -96,10 +89,34 @@ function cook(fn, ingredients, recipe, callbackPosition, noParallel) {
       if (err) {
         callback(err);
       } else {
-        callback(null, curry(fn, vegetables, recipe)());
+        var result = fn.apply(this, garnish(smorgasbord, vegetables, recipe));
+        if (originalCbPosition === false || originalCbPosition === null) {
+          callback(null, result);
+        }
       }
     });
   };
+}
+
+function garnish(args, curryArgs, pos) {
+  var opargs = Array.prototype;
+  if (pos === undefined || pos === true || pos === 0 || pos < 0) {
+    opargs = curryArgs.concat(opargs.slice.call(args));
+  } else if (pos === false || args.length < pos) {
+    opargs = opargs.slice.call(args).concat(curryArgs);
+  } else if (Array.isArray(pos)) {
+    opargs = opargs.slice.call(args);
+    for (index in pos) {
+      opargs.splice(pos[index], 0, curryArgs[index]);
+    }
+  } else {
+    opargs = [].concat(
+      opargs.slice.call(args, 0, pos),
+      curryArgs,
+      opargs.slice.call(args, pos)
+    );
+  }
+  return opargs;
 }
 
 exports.curry = exports.leftCurry = exports.lcurry =

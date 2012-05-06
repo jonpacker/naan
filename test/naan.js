@@ -56,7 +56,7 @@ exports['cook'] = function(beforeExit, assert) {
   var find10 = naan.curry(delayedNumber, 50, 10);
   var find20 = naan.curry(delayedNumber, 50, 20);
 
-  var cookedsub = naan.cook(subtract, [find10, find20]);
+  var cookedsub = naan.cook(subtract, [find10, find20], true, false);
   var cookResult;
   cookedsub(function(err, value) {
     assert.ok(!err);
@@ -71,7 +71,7 @@ exports['cook'] = function(beforeExit, assert) {
 exports['complicated cooking'] = function(be, assert) {
   var complsub = function(x, y, callback, z, n) {
     delayedNumber(50, 10, function(err, j) {
-      callback(x * y * z * n * j);
+      callback(null, x - y - z - n - j);
     });
   }
   
