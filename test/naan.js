@@ -66,6 +66,7 @@ exports['cook'] = function(beforeExit, assert) {
 exports['complicated cooking'] = function(be, assert) {
   var complmult = function(x, y, callback, z, n) {
     delayedNumber(50, 10, function(err, j) {
+      console.log (x, y, z, n, j);
       callback(x * y * z * n * j);
     });
   }
@@ -75,8 +76,15 @@ exports['complicated cooking'] = function(be, assert) {
 
   var ccook = naan.cook(complmult, [find5, find6], [1, 3], 2);
   var extraComplCook = naan.rcurry(ccook, 8);
+
+  var cookResult;
+
   extraComplCook(2, function(err, value) {
     assert.ok(!err);
-    assert.equal(value, multiply(2, 5, 6, 8, 10));
+    cookResult = value;
+  });
+
+  be(function() {
+    assert.equal(cookResult, multiply(2, 5, 6, 8, 10));
   });
 }
