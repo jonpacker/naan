@@ -10,7 +10,7 @@ var async = require('async');
 function curry(fn, curryArgs, pos) {
   return function() {
     var opargs = [];
-    if (pos === undefined || pos === true || pos <= 0) {
+    if (pos === undefined || pos === true || pos === 0 || pos < 0) {
       opargs = curryArgs.concat(opargs.slice.call(arguments));
     } else if (pos === false || arguments.length < pos) {
       opargs = opargs.slice.call(arguments).concat(curryArgs);
@@ -85,6 +85,7 @@ function cook(fn, ingredients, recipe, callbackPosition, noParallel) {
         }
       }
     }
+
     var callback = smorgasbord[callbackPosition];
 
     if (typeof callback !== 'function') {
@@ -108,7 +109,7 @@ function leftCurry(fn) {
 
 exports.rightCurry = exports.rcurry =
 function rightCurry(fn) {
-  return curry(fn, [].slice.call(arguments, 1));
+  return curry(fn, [].slice.call(arguments, 1), false);
 }
 
 exports.curryArgs = exports.leftCurryArgs = exports.lcurrya = exports.currya =
