@@ -143,6 +143,11 @@
     }
   }
 
+  naan.ltupperware = naan.lalwaysReturn = naan.lwrap =
+  function ltupperware(val, fn) {
+    return tupperware(fn, val);
+  }
+
   naan.curry = naan.leftCurry = naan.lcurry =
   function leftCurry(fn) {
     return curry(fn, [].slice.call(arguments, 1));
