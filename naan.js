@@ -135,6 +135,14 @@
     return opargs;
   }
 
+  naan.tupperware = naan.alwaysReturn = naan.wrap =
+  function tupperware(fn, val) {
+    return function() {
+      fn.apply(this, arguments);
+      return val;
+    }
+  }
+
   naan.curry = naan.leftCurry = naan.lcurry =
   function leftCurry(fn) {
     return curry(fn, [].slice.call(arguments, 1));

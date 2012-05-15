@@ -92,3 +92,23 @@ exports['complicated cooking'] = function(be, assert) {
     assert.equal(cookResult, subtract(2, 5, 6, 8, 10));
   });
 }
+
+exports['tupperware wrapping'] = function(be, assert) {
+  var wrapped = naan.tupperware(subtract, 'Mega Cucumber!');
+  assert.equal(wrapped(4, 8, 3), 'Mega Cucumber!');
+  assert.notEqual(wrapped(4, 8, 3), subtract(4, 8, 3));
+}
+
+exports['tupperware preserves original code'] = function(be, assert) {
+  var sideEffect = 0;
+
+  function causeSideEffect(incAmount, incAmount2, incAmount3) {
+    sideEffect += incAmount + incAmount2 + incAmount3;
+    return sideEffect;
+  }
+
+  var wrapped = naan.tupperware(causeSideEffect, 'Mega Cucumber!');
+  assert.equal(wrapped(1, 2, 3), 'Mega Cucumber!');
+  assert.equal(sideEffect, 6);
+  assert.equal(causeSideEffect(2, 3, 4), 15);
+}
