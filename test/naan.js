@@ -127,7 +127,7 @@ function bsubtract() {
 }
 
 exports['bound curry'] = function(beforeExit, assert) {
-  var sub45 = naan.b.curry({ num: 5 }, subtract, 4, 5);
+  var sub45 = naan.b.curry({ num: 5 }, bsubtract, 4, 5);
   assert.equal(5 - subtract(4, 5, 6), sub45(6));
 }
 
@@ -199,4 +199,23 @@ exports['group curry - array'] = function(be, assert) {
   cfns = naan.crock(fns, naan.curry, 5, 15);
   assert.equal(cfns[0](10, 20), subtract(5, 15, 10, 20));
   assert.equal(cfns[1](2, 7), multivide(5, 15, 2, 7));
+}
+
+exports['bound tupperware wrapping'] = function(be, assert) {
+  var wrapped = naan.b.tupperware({ num: 5 }, bsubtract, 'Mega Cucumber!');
+  assert.equal(wrapped(4, 8, 3), 'Mega Cucumber!');
+  assert.notEqual(wrapped(4, 8, 3), subtract(4, 8, 3));
+}
+
+exports['bound tupperware preserves original code'] = function(be, assert) {
+  var sideEffect = 0;
+
+  function causeSideEffect(incAmount, incAmount2, incAmount3) {
+    sideEffect += this.num + incAmount + incAmount2 + incAmount3;
+    return sideEffect;
+  }
+
+  var wrapped = naan.b.tupperware({ num: 5 }, causeSideEffect, 'Mega Cucumber!');
+  assert.equal(wrapped(1, 2, 3), 'Mega Cucumber!');
+  assert.equal(sideEffect, 11);
 }
