@@ -201,7 +201,7 @@ describe('Cooking', function() {
     });
   });
 
-  it('should have the correct argument order if context is supplied', function() {
+  it('should have the correct argument order if context is supplied', function(done) {
     var complsub = function(x, y, callback, z, n) {
       var xnum = this.num;
       delayedNumber(6, 10, function(err, j) {
