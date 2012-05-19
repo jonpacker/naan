@@ -65,7 +65,7 @@ exports['curryArgsPosition'] = function() {
   assert.equal(subtract(5), subx5x());
 }
 
-exports['curryEntagle'] = function() {
+exports['curryEntangle'] = function() {
   var subx4x5x6x = naan.ecurry(subtract, [4, 5, 6], [1, 3, 5]);
   assert.equal(subtract(1, 4, 2, 5, 3, 6), subx4x5x6x(1, 2, 3));
   assert.equal(subtract(1, 4, 2, 5, 6), subx4x5x6x(1, 2));
@@ -74,8 +74,8 @@ exports['curryEntagle'] = function() {
 }
 
 exports['cook'] = function(done) {
-  var find10 = naan.curry(delayedNumber, 50, 10);
-  var find20 = naan.curry(delayedNumber, 50, 20);
+  var find10 = naan.curry(delayedNumber, 4, 10);
+  var find20 = naan.curry(delayedNumber, 12, 20);
 
   var cookedsub = naan.cook(subtract, [find10, find20], true, false);
   cookedsub(function(err, value) {
@@ -87,13 +87,13 @@ exports['cook'] = function(done) {
 
 exports['complicated cooking'] = function(done) {
   var complsub = function(x, y, callback, z, n) {
-    delayedNumber(50, 10, function(err, j) {
+    delayedNumber(4, 10, function(err, j) {
       callback(null, x - y - z - n - j);
     });
   }
   
-  find5 = naan.curry(delayedNumber, 20, 5);
-  find6 = naan.curry(delayedNumber, 20, 6);
+  var find5 = naan.curry(delayedNumber, 18, 5);
+  var find6 = naan.curry(delayedNumber, 4, 6);
 
   var ccook = naan.cook(complsub, [find5, find6], [1, 3], 2);
   var extraComplCook = naan.rcurry(ccook, 8);
@@ -187,7 +187,7 @@ exports['group curry - object'] = function() {
     mv: multivide
   };
 
-  cobj = naan.crock(obj, naan.curry, 5, 15);
+  var cobj = naan.crock(obj, naan.curry, 5, 15);
 
   assert.equal(cobj.sub(10, 20), subtract(5, 15, 10, 20));
   assert.equal(cobj.mv(2, 7), multivide(5, 15, 2, 7));
@@ -195,7 +195,7 @@ exports['group curry - object'] = function() {
 
 exports['group curry - array'] = function() {
   var fns = [subtract, multivide];
-  cfns = naan.crock(fns, naan.curry, 5, 15);
+  var cfns = naan.crock(fns, naan.curry, 5, 15);
   assert.equal(cfns[0](10, 20), subtract(5, 15, 10, 20));
   assert.equal(cfns[1](2, 7), multivide(5, 15, 2, 7));
 }
@@ -220,8 +220,8 @@ exports['bound tupperware preserves original code'] = function() {
 }
 
 exports['bound cook'] = function(done) {
-  var find10 = naan.b.curry({num: 10}, bdelayedNumber, 50);
-  var find20 = naan.b.curry({num: 20}, bdelayedNumber, 50);
+  var find10 = naan.b.curry({num: 10}, bdelayedNumber, 4);
+  var find20 = naan.b.curry({num: 20}, bdelayedNumber, 18);
 
   var cookedsub = naan.b.cook({num: 5}, bsubtract, [find10, find20], true, false);
   cookedsub(function(err, value) {
@@ -234,13 +234,13 @@ exports['bound cook'] = function(done) {
 exports['bound complicated cooking'] = function(done) {
   var complsub = function(x, y, callback, z, n) {
     var xnum = this.num;
-    delayedNumber(50, 10, function(err, j) {
+    delayedNumber(6, 10, function(err, j) {
       callback(null, xnum - x - y - z - n - j);
     });
   }
   
-  find5 = naan.b.curry({num: 5}, bdelayedNumber, 20);
-  find6 = naan.b.curry({num: 6}, bdelayedNumber, 20);
+  var find5 = naan.b.curry({num: 5}, bdelayedNumber, 2);
+  var find6 = naan.b.curry({num: 6}, bdelayedNumber, 4);
 
   var ccook = naan.b.cook({num: 10}, complsub, [find5, find6], [1, 3], 2);
   var extraComplCook = naan.rcurry(ccook, 8);

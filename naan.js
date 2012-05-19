@@ -81,7 +81,7 @@
           } else if (recipe === undefined || recipe === true) {
             callbackPosition--;
           } else {
-            for (index in recipe) {
+            for (var index in recipe) {
               if (recipe[index] < callbackPosition) {
                 callbackPosition--;
               }
@@ -125,7 +125,7 @@
         opargs = opargs.slice.call(args).concat(curryArgs);
       } else if (Array.isArray(pos)) {
         opargs = opargs.slice.call(args);
-        for (index in pos) {
+        for (var index in pos) {
           opargs.splice(pos[index], 0, curryArgs[index]);
         }
       } else {
