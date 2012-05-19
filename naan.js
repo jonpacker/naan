@@ -143,6 +143,28 @@
     }
   }
 
+  naan.crock = naan.groupCurry = naan.group = naan.gcurry =
+  function crock(group, curryfn) {
+    var result = Array.isArray(group) ? [] : {};
+    var curryargs = Array.prototype.slice.call(arguments, 2);
+
+    if (typeof curryfn !== 'function') {
+      curryargs.unshift(curryfn);
+      curryfn = naan.curry;
+    }
+
+    curryargs.unshift(null);
+    for (var key in group) {
+      if (typeof group[key] !== 'function') {
+        continue;
+      }
+      curryargs[0] = group[key];
+      result[key] = curryfn.apply(this, curryargs);
+    }
+
+    return result;
+  }
+
   naan.ltupperware = naan.lalwaysReturn = naan.lwrap =
   function ltupperware(val, fn) {
     return tupperware(fn, val);

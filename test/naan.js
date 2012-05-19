@@ -6,6 +6,13 @@ function subtract() {
   });
 }
 
+function multivide() {
+  var tog = true;
+  return [].reduce.call(arguments, function(memo, current) {
+    return (tog = !tog) ? memo / current : memo * current;
+  });
+}
+
 function delayedNumber(delay, number, callback) {
   setTimeout(function() {
     callback(null, number);
@@ -111,4 +118,23 @@ exports['tupperware preserves original code'] = function(be, assert) {
   assert.equal(wrapped(1, 2, 3), 'Mega Cucumber!');
   assert.equal(sideEffect, 6);
   assert.equal(causeSideEffect(2, 3, 4), 15);
+}
+
+exports['group curry - object'] = function(be, assert) {
+  var obj = {
+    sub: subtract,
+    mv: multivide
+  };
+
+  cobj = naan.crock(obj, naan.curry, 5, 15);
+
+  assert.equal(cobj.sub(10, 20), subtract(5, 15, 10, 20));
+  assert.equal(cobj.mv(2, 7), multivide(5, 15, 2, 7));
+}
+
+exports['group curry - array'] = function(be, assert) {
+  var fns = [subtract, multivide];
+  cfns = naan.crock(fns, naan.curry, 5, 15);
+  assert.equal(cfns[0](10, 20), subtract(5, 15, 10, 20));
+  assert.equal(cfns[1](2, 7), multivide(5, 15, 2, 7));
 }
