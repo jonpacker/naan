@@ -24,8 +24,9 @@
     //             args. if this position is great than the length of the passed args,
     //             then the args are added at the end
     function curry(context, fn, curryArgs, pos) {
+      var garnisher = garnish.prepare(curryArgs, pos);
       return (function curriedFunction() {
-        return fn.apply(context, garnish(arguments, curryArgs, pos));
+        return fn.apply(context, garnisher(arguments));
       }).bind(context);
     }
 
@@ -107,7 +108,7 @@
           } else {
             var result = fn.apply(
               context, 
-              garnish(smorgasbord, vegetables, recipe)
+              garnish.prepare(vegetables, recipe)(smorgasbord)
             );
             if (originalCbPosition === false || originalCbPosition === null) {
               callback(null, result);
@@ -125,8 +126,18 @@
         opargs = opargs.slice.call(args).concat(curryArgs);
       } else if (Array.isArray(pos)) {
         opargs = opargs.slice.call(args);
+
         for (var index in pos) {
-          opargs.splice(pos[index], 0, curryArgs[index]);
+          if (index >= curryArgs.length) {
+            break;
+          } else if (index == pos.length - 1 && curryArgs.length > pos.length) {
+            opargs.splice.apply(
+              opargs, 
+              [pos[index], 0].concat( curryArgs.slice(index) )
+            );
+          } else {
+            opargs.splice(pos[index], 0, curryArgs[index]);
+          }
         }
       } else {
         opargs = [].concat(
@@ -136,6 +147,29 @@
         );
       }
       return opargs;
+    }
+
+    garnish.prepare = function(curryArgs, pos) {
+      if (Array.isArray(pos)) {
+        var index = -1;
+        var sortable = curryArgs.map(function(val) {
+          return {
+            index: ++index >= pos.length ? pos[pos.length - 1] : pos[index],
+            value: val
+          };
+        })
+        sortable.sort(function(l, r) {
+          return l.index - r.index;
+        });
+        curryArgs = sortable.map(function(item) {
+          return item.value;
+        });
+        pos = pos.slice().sort();
+      }
+
+      return function(meal) {
+        return garnish(meal, curryArgs, pos);
+      };
     }
 
     naan.tupperware = naan.alwaysReturn = naan.wrap =

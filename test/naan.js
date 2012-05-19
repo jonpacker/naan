@@ -115,6 +115,34 @@ describe('Curries', function() {
       assert.equal(subtract(4, 5, 6), subx4x5x6x());
     })
 
+    it('should handle inconsecutive positions', function() {
+      var subx4x5x6x = naan.ecurry(subtract, [6, 4, 5], [5, 1, 3]);
+      assert.equal(subtract(1, 4, 2, 5, 3, 6), subx4x5x6x(1, 2, 3));
+    })
+
+    it('should handle inconsecutive positions with less args', function() {
+      var subx4x5x6x = naan.ecurry(subtract, [6, 4, 5], [5, 1, 3]);
+      assert.equal(subtract(1, 4, 2, 5, 6), subx4x5x6x(1, 2));
+      assert.equal(subtract(4, 4, 5, 6), subx4x5x6x(4));
+      assert.equal(subtract(4, 5, 6), subx4x5x6x());
+    })
+
+    it('should apply remaining args at the last matching position', function() {
+      var subx4x5x6x = naan.ecurry(subtract, [4, 5, 6], [1, 3]);
+      assert.equal(subtract(1, 4, 2, 5, 6, 3), subx4x5x6x(1, 2, 3));
+      assert.equal(subtract(1, 4, 2, 5, 6), subx4x5x6x(1, 2));
+      assert.equal(subtract(4, 4, 5, 6), subx4x5x6x(4));
+      assert.equal(subtract(4, 5, 6), subx4x5x6x());
+    })
+
+    it('should ignore extra positions', function() {
+      var subx4x5x6x = naan.ecurry(subtract, [4, 5, 6], [1, 3, 5, 7, 9]);
+      assert.equal(subtract(1, 4, 2, 5, 3, 6), subx4x5x6x(1, 2, 3));
+      assert.equal(subtract(1, 4, 2, 5, 6), subx4x5x6x(1, 2));
+      assert.equal(subtract(4, 4, 5, 6), subx4x5x6x(4));
+      assert.equal(subtract(4, 5, 6), subx4x5x6x());
+    })
+
     it('should maintain context when supplied', function() {
       var subx4x5x6x = naan.b.ecurry({ num: 5 }, bsubtract, [4, 5, 6], [1, 3, 5]);
       assert.equal(5 - subtract(1, 4, 2, 5, 3, 6), subx4x5x6x(1, 2, 3));
