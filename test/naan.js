@@ -193,11 +193,45 @@ exports['group curry - object'] = function() {
   assert.equal(cobj.mv(2, 7), multivide(5, 15, 2, 7));
 }
 
+exports['group curry - object - only alters fns'] = function() {
+  var fns = {
+    sub: subtract, 
+    bob: 'bob', 
+    num: 5, 
+    food: {potato:'PIE'}, 
+    mv: multivide
+  };
+  var cfns = naan.crock(fns, naan.curry, 5, 15);
+  assert.equal(cfns.sub(10, 20), subtract(5, 15, 10, 20));
+  assert.equal(cfns.mv(2, 7), multivide(5, 15, 2, 7));
+  assert.ok(cfns.bob === fns.bob);
+  assert.ok(cfns.num === cfns.num);
+  assert.deepEqual(cfns.food, fns.food);
+}
+
 exports['group curry - array'] = function() {
   var fns = [subtract, multivide];
   var cfns = naan.crock(fns, naan.curry, 5, 15);
   assert.equal(cfns[0](10, 20), subtract(5, 15, 10, 20));
   assert.equal(cfns[1](2, 7), multivide(5, 15, 2, 7));
+}
+
+exports['group curry - array - only alters fns'] = function() {
+  var fns = [subtract, 'bob', 5, {potato:'PIE'}, multivide];
+  var cfns = naan.crock(fns, naan.curry, 5, 15);
+  assert.equal(cfns[0](10, 20), subtract(5, 15, 10, 20));
+  assert.equal(cfns[4](2, 7), multivide(5, 15, 2, 7));
+  assert.ok(cfns[1] === fns[1]);
+  assert.ok(cfns[2] === fns[2]);
+  assert.deepEqual(cfns[3], fns[3]);
+}
+
+exports['group curry - doesn\'t re-curry recurring refs'] = function() {
+  var fns = {suba: subtract, subb: subtract, subx: subtract};
+  var cfns = naan.crock(fns, naan.curry, 5, 15);
+  assert.equal(cfns.suba(10, 20), subtract(5, 15, 10, 20));
+  assert.equal(cfns.subb(10, 20), subtract(5, 15, 10, 20));
+  assert.equal(cfns.subx(10, 20), subtract(5, 15, 10, 20));
 }
 
 exports['bound tupperware wrapping'] = function() {

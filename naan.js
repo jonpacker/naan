@@ -202,6 +202,7 @@
 
     for (var key in group) {
       if (typeof group[key] !== 'function') {
+        result[key] = group[key];
         continue;
       }
 
