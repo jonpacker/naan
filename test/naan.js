@@ -112,3 +112,65 @@ exports['tupperware preserves original code'] = function(be, assert) {
   assert.equal(sideEffect, 6);
   assert.equal(causeSideEffect(2, 3, 4), 15);
 }
+
+function bsubtract() {
+  return (this.num || 0) - [].reduce.call(arguments, function(memo, current) {
+    return memo - current;
+  });
+}
+
+exports['bound curry'] = function(beforeExit, assert) {
+  var sub45 = naan.b.curry({ num: 5 }, subtract, 4, 5);
+  assert.equal(5 - subtract(4, 5, 6), sub45(6));
+}
+
+exports['bound curryRight'] = function(beforeExit, assert) {
+  var subx56 = naan.b.rcurry({ num: 5 }, bsubtract, 5, 6);
+  assert.equal(5 - subtract(4, 5, 6), subx56(4));
+}
+
+exports['bound curryArgs'] = function(beforeExit, assert) {
+  var sub456 = naan.b.currya({ num: 5 }, bsubtract, [4, 5, 6]);
+  assert.equal(5 - subtract(4, 5, 6, 7, 8), sub456(7, 8));
+}
+
+exports['bound curryArgsRight'] = function(beforeExit, assert) {
+  var subx56 = naan.b.rcurrya({ num: 5 }, bsubtract, [5, 6]);
+  assert.equal(5 - subtract(2, 3, 4, 5, 6), subx56(2, 3, 4));
+}
+
+exports['bound curryArgsPosition'] = function(beforeExit, assert) {
+  var subxx56x = naan.b.ncurry({ num: 5 }, bsubtract, [5, 6], 2);
+  assert.equal(5 - subtract(3, 4, 5, 6, 7, 8), subxx56x(3, 4, 7, 8));
+  assert.equal(5 - subtract(3, 4, 5, 6), subxx56x(3, 4));
+  assert.equal(5 - subtract(3, 5, 6), subxx56x(3));
+
+  var subx5x = naan.b.ncurry({ num: 5 }, bsubtract, 5, 1);
+  assert.equal(5 - subtract(4, 5, 6), subx5x(4, 6));
+  assert.equal(5 - subtract(4, 5), subx5x(4));
+  assert.equal(5 - subtract(5), subx5x());
+}
+
+exports['bound curryEntagle'] = function(beforeExit, assert) {
+  var subx4x5x6x = naan.b.ecurry({ num: 5 }, bsubtract, [4, 5, 6], [1, 3, 5]);
+  assert.equal(5 - subtract(1, 4, 2, 5, 3, 6), subx4x5x6x(1, 2, 3));
+  assert.equal(5 - subtract(1, 4, 2, 5, 6), subx4x5x6x(1, 2));
+  assert.equal(5 - subtract(4, 4, 5, 6), subx4x5x6x(4));
+  assert.equal(5 - subtract(4, 5, 6), subx4x5x6x());
+}
+
+exports['bound cook'] = function(beforeExit, assert) {
+  var find10 = naan.curry(delayedNumber, 50, 10);
+  var find20 = naan.curry(delayedNumber, 50, 20);
+
+  var cookedsub = naan.b.cook({ num: 5 }, bsubtract, [find10, find20], true, false);
+  var cookResult;
+  cookedsub(function(err, value) {
+    assert.ok(!err);
+    cookResult = value;
+  });
+
+  beforeExit(function() {
+    assert.equal(cookResult, 5 - subtract(10, 20));
+  });
+}
