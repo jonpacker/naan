@@ -1,5 +1,7 @@
-var naan = require('../naan');
-var assert = require('assert');
+if (typeof naan == 'undefined') {
+  var naan = require('../naan');
+  var assert = require('assert');
+}
 
 function subtract() {
   return [].reduce.call(arguments, function(memo, current) {
