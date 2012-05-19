@@ -10,7 +10,7 @@
   },
   "main": "naan.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha -R spec",
+    "test": "node node_modules/mocha/bin/mocha -R spec",
     "postinstall": "git submodule update --init --recursive"
   },
   "engines": {
