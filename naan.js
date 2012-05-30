@@ -25,9 +25,13 @@
     //             then the args are added at the end
     function curry(context, fn, curryArgs, pos) {
       var garnisher = garnish.prepare(curryArgs, pos);
-      return (function curriedFunction() {
-        return fn.apply(context, garnisher(arguments));
-      }).bind(context);
+      function kitchen(fn) {
+        return (function curriedFunction() {
+          return fn.apply(context, garnisher(arguments));
+        }).bind(context);
+      }
+
+      return Array.isArray(fn) ? fn.map(kitchen) : kitchen(fn);
     }
 
     // This creates a curried function which asynchronously resolves the arguments 

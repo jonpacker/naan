@@ -28,6 +28,13 @@ function bsubtract() {
   });
 }
 
+function bmultivide() {
+  var tog = true;
+  return this.num / [].reduce.call(arguments, function(memo, current) {
+    return (tog = !tog) ? memo / current : memo * current;
+  });
+}
+
 function bdelayedNumber(delay, callback) {
   var self = this;
   setTimeout(function() {
@@ -47,6 +54,18 @@ describe('Curries', function() {
       var sub45 = naan.b.curry({ num: 5 }, bsubtract, 4, 5);
       assert.equal(5 - subtract(4, 5, 6), sub45(6));
     })
+
+    it('should take an array of functions and curry them all', function() {
+      var fns = naan.curry([subtract, multivide], 4, 5);
+      assert.equal(subtract(4, 5, 6), fns[0](6));
+      assert.equal(multivide(4, 5, 6), fns[1](6));
+    });
+
+    it('should take an array of fns and bind & curry them all', function() {
+      var fns = naan.b.curry({ num: 5 }, [bsubtract, bmultivide], 4, 5);
+      assert.equal(5 - subtract(4, 5, 6), fns[0](6));
+      assert.equal(5 / multivide(4, 5, 6), fns[1](6));
+    });
   });
 
   describe('rightCurry', function() {
