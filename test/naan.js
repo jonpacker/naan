@@ -336,4 +336,17 @@ describe('Crocks/Group Curries', function() {
     assert.equal(cfns.subb(10, 20), subtract(5, 15, 10, 20));
     assert.equal(cfns.subx(10, 20), subtract(5, 15, 10, 20));
   })
+  
+  it('should extend a base object when used as an extendCrock', function() {
+    var base = { _test_thing: 'test', _other_thing: 1234, _mv: multivide };
+    var obj = { sub: subtract, mv: multivide };
+
+    var cobj = naan.ecrock(base, obj, naan.curry, 5, 15);
+    
+    assert.equal(cobj.sub(10, 20), subtract(5, 15, 10, 20));
+    assert.equal(cobj.mv(2, 7), multivide(5, 15, 2, 7));  
+    assert.equal(cobj._mv(2, 4, 5, 6, 30), multivide(2, 4, 5, 6, 30));
+    assert.equal(cobj._test_thing, 'test');
+    assert.equal(cobj._other_thing, 1234);
+  });
 });

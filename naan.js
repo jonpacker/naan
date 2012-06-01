@@ -226,9 +226,9 @@
 
   // Since this is more of a 'meta' function which operates on any curry fn it
   // sits outside of bound and unbound.
-  function crock(group, curryfn) {
-    var result = Array.isArray(group) ? [] : {};
-    var curryargs = Array.prototype.slice.call(arguments, 2);
+  function extendCrock(result, group, curryfn) {
+    var result = result || (Array.isArray(group) ? [] : {});
+    var curryargs = Array.prototype.slice.call(arguments, 3);
 
     if (typeof curryfn !== 'function') {
       curryargs.unshift(curryfn);
@@ -256,13 +256,15 @@
     return result;
   }
 
-  var unbound = crock(bound, bound.curry(this, bound.curry, this), this);
-  unbound.crock = unbound.groupCurry = unbound.group = unbound.gcurry = crock;
-  unbound.b = unbound.bound = bound;
+  var ub = extendCrock({}, bound, bound.curry(this, bound.curry, this), this);
+  var crock = ub.curry(extendCrock, false);
+  ub.crock = ub.groupCurry = ub.group = ub.gcurry = crock; 
+  ub.extendCrock = ub.ecrock = ub.egroup = ub.egcurry = extendCrock;
+  ub.b = ub.bound = bound;
 
   if (typeof module !== 'undefined' && module.exports) {
-    module.exports = unbound;
+    module.exports = ub;
   } else {
-    root.naan = unbound;
+    root.naan = ub;
   }
 })()
