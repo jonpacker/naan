@@ -221,6 +221,7 @@
       return curry.apply(this, Array.prototype.slice.call(arguments));
     };
 
+
     return naan;
   })();
 
@@ -261,6 +262,23 @@
   ub.crock = ub.groupCurry = ub.group = ub.gcurry = crock; 
   ub.extendCrock = ub.ecrock = ub.egroup = ub.egcurry = extendCrock;
   ub.b = ub.bound = bound;
+
+  ub.extendCombine = ub.ecombine = function(base, target, args, fn) {
+    fn = fn || ub.curry;
+    var result = base || (Array.isArray(target) ? [] : {});
+    if (Array.isArray(target) && target.length !== args.length) {
+      return undefined;
+    }
+    for (var key in target) {
+      if (typeof args[key] === 'undefined') {
+        continue;
+      }
+      var cargs = [ target[key] ].concat(args[key]);
+      result[key] = fn.apply(this, cargs);
+    }
+    return result;
+  }
+  ub.combine = ub.curry(ub.ecombine, null);
 
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = ub;

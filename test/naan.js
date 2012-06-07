@@ -66,6 +66,10 @@ describe('Curries', function() {
       assert.equal(5 - subtract(4, 5, 6), fns[0](6));
       assert.equal(5 / multivide(4, 5, 6), fns[1](6));
     });
+
+    it('should preserved undefined args', function() {
+
+    });
   });
 
   describe('rightCurry', function() {
@@ -350,3 +354,55 @@ describe('Crocks/Group Curries', function() {
     assert.equal(cobj._other_thing, 1234);
   });
 });
+
+describe('Combine', function() {
+  it('should combine a array of functions with an array of values', function() {
+    var fns = [ subtract, multivide ];
+    var vals = [ 5, 10 ];
+
+    var combined = naan.combine(fns, vals);
+
+    assert.equal(combined[0](10, 15), subtract(5, 10, 15));
+    assert.equal(combined[1](8, 12), multivide(10, 8, 12));
+  });
+
+  it('should combine an object with a shell with curry args', function() {
+    var fns = { sub: subtract, mv: multivide };
+    var cargs = { sub: [5, 6], mv: [7, 9, 12] };
+
+    var combined = naan.combine(fns, cargs);
+
+    assert.equal(combined.sub(10, 12), subtract(5, 6, 10, 12));
+    assert.equal(combined.mv(15, 14), multivide(7, 9, 12, 15, 14));
+  });
+  
+  it('should use a supplied curry function', function() {
+    var fns = [ subtract, multivide ];
+    var vals = [ 5, 10 ];
+
+    var combined = naan.combine(fns, vals, naan.rcurry);
+
+    assert.equal(combined[0](10, 15), subtract(10, 15, 5));
+    assert.equal(combined[1](8, 12), multivide(8, 12, 10));
+  });
+
+  it('should not accept arrays of varying size', function() {
+    var fns = [multivide, subtract];
+    var cargs = [1,2,3];
+
+    assert.ok(naan.combine(fns, cargs) === undefined);
+  });
+
+  it('should extend an object if supplied', function() {
+    var fns = { sub: subtract };
+    var base = { mv: multivide };
+    var args = { sub: 8, mv: 5 };
+
+    var com = naan.ecombine(base, fns, args);
+
+    assert.deepEqual(com, base);
+    assert.equal(base.sub(9, 10), subtract(8, 9, 10));
+    assert.equal(base.mv(9, 10, 11), multivide(9, 10, 11));
+  });
+});
+
