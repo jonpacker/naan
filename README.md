@@ -26,4 +26,78 @@ writeFooContents('bar.txt', function(err) {
   // The contents of 'foo.txt' has been written to 'bar.txt'
 })
 
+// Naan works great with Async!
+var readers = ['foo.txt', 'bar.txt', 'bob.txt'].map(function(file) {
+  return naan.curry(fs.readFile)
+});
+async.parallel(readers, function(err, contents) {
+  // contents == contents of foo.txt, bar.txt & bob.txt
+});
+
+// Especially for moulding functions into the right format
+function linkFn(options, first, relName, second, properties, callback) { 
+  // do something
+  callback();
+}
+
+var args = [ options, relationshipName, second, props ];                   
+var linker = naan.entangleCurry(linkFn, args, [0, 2, 3, 4]);
+// Call linkFn for every item in `thingsToLink`, but now `linker` only needs
+// `first` and `callback` - the rest of the arguments are curried in           
+return async.forEach(thingsToLink, linker, function(err) {
+  // things are linked!
+});
+
 ```
+
+These are a few of the basic uses of Naan. Each of the available functions are
+listed below.
+
+## Download
+
+For node, just use npm:
+
+    npm install naan
+
+## In the Browser
+
+Tested in IE9+. It currently uses some ES5 stuff which doesn't work in IE8, but this will be
+fixed shortly.
+
+For info on how to test in the browser, see [testing](#testing).
+
+```html
+<script src="async.min.js"></script>
+<script src="naan.min.js"></script>
+<script>
+  var createDiv = naan.curry(document.createElement, 'div');
+</script>
+```
+
+__Development:__ [naan.js](https://github.com/jonpacker/naan/raw/master/naan.js) - 9.5kb Uncompressed
+
+__Production:__ [naan.min.js](https://github.com/caolan/async/raw/master/naan.min.js) - 3.0kb Minified
+
+## Documentation
+
+### Curries
+
+* [curry](#curry)
+* [rightCurry](#rightCurry)
+* [curryArgs](#curryArgs)
+* [curryArgsRight](#curryArgsRight)
+* [positionCurry](#positionCurry)
+* [entangleCurry](#entangleCurry)
+
+### Cooking
+
+* [cook](#cook)
+
+### Return control
+
+* [alwaysReturn](#alwaysReturn)
+
+### Group Curries
+
+* [crock](#crock)
+* [combine](#combine)
