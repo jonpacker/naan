@@ -2,7 +2,7 @@
   "author": "Jon Packer <contact@jonpacker.com> (http://www.jonpacker.com)",
   "name": "naan",
   "description": "async and flexible currying for js",
-  "version": "1.3.7",
+  "version": "1.3.8",
   "homepage": "https://github.com/jonpacker/naan",
   "repository": {
     "type": "git",
