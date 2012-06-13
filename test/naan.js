@@ -43,7 +43,6 @@ function bdelayedNumber(delay, callback) {
 }
 
 describe('Curries', function() {
-
   describe('leftCurry', function() {
     it('should apply args on the left', function() {
       var sub45 = naan.curry(subtract, 4, 5);

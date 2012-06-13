@@ -14,7 +14,7 @@
   }
 
   var bound = (function() {
-    naan = {};
+    var naan = {};
     // context: the context to bind fn to
     // fn: the function to curry
     // args: the args to create a curry with
