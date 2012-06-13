@@ -67,8 +67,18 @@ describe('Curries', function() {
       assert.equal(5 / multivide(4, 5, 6), fns[1](6));
     });
 
-    it('should preserved undefined args', function() {
+    it('should inherit context when not specified', function() {
+      var fn = naan.curry(function() {
+        assert.ok(this.test === 89);
+      }, 'test');
+      fn.call({test: 89});
+    });
 
+    it('should handle an array argument as a single argument', function() {
+      var fn = naan.curry(function(arr) {
+        assert.deepEqual(arr, [{test: 1}, {test2: 2}]);
+      }, [{test: 1}, {test2: 2}]);
+      fn();
     });
   });
 

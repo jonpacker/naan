@@ -26,9 +26,9 @@
     function curry(context, fn, curryArgs, pos) {
       var garnisher = garnish.prepare(curryArgs, pos);
       function kitchen(fn) {
-        return (function curriedFunction() {
-          return fn.apply(context, garnisher(arguments));
-        }).bind(context);
+        return function curriedFunction() {
+          return fn.apply(context || this, garnisher(arguments));
+        };
       }
 
       return Array.isArray(fn) ? fn.map(kitchen) : kitchen(fn);
@@ -257,7 +257,7 @@
     return result;
   }
 
-  var ub = extendCrock({}, bound, bound.curry(this, bound.curry, this), this);
+  var ub = extendCrock({}, bound, bound.curry(this, bound.curry, null), null);
   var crock = ub.curry(extendCrock, false);
   ub.crock = ub.groupCurry = ub.group = ub.gcurry = crock; 
   ub.extendCrock = ub.ecrock = ub.egroup = ub.egcurry = extendCrock;

@@ -34,20 +34,6 @@ async.parallel(readers, function(err, contents) {
   // contents == contents of foo.txt, bar.txt & bob.txt
 });
 
-// Especially for moulding functions into the right format
-function linkFn(options, first, relName, second, properties, callback) { 
-  // do something
-  callback();
-}
-
-var args = [ options, relationshipName, second, props ];                   
-var linker = naan.entangleCurry(linkFn, args, [0, 2, 3, 4]);
-// Call linkFn for every item in `thingsToLink`, but now `linker` only needs
-// `first` and `callback` - the rest of the arguments are curried in           
-return async.forEach(thingsToLink, linker, function(err) {
-  // things are linked!
-});
-
 ```
 
 These are a few of the basic uses of Naan. Each of the available functions are
