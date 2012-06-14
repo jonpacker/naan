@@ -225,11 +225,12 @@
     return naan;
   })();
 
-  // Since this is more of a 'meta' function which operates on any curry fn it
-  // sits outside of bound and unbound.
-  function extendCrock(result, group, curryfn) {
+  // "zomboCrock" because it doess absolutely everything you want. And that's
+  // why we don't expose it anywhere! Ok, ok, if you would like a real name, 
+  // `recursiveExtendCrock` would be suitable.
+  function zomboCrock(result, group, recurse, curryfn) {
     var result = result || (Array.isArray(group) ? [] : {});
-    var curryargs = Array.prototype.slice.call(arguments, 3);
+    var curryargs = Array.prototype.slice.call(arguments, 4);
 
     if (typeof curryfn !== 'function') {
       curryargs.unshift(curryfn);
@@ -240,27 +241,37 @@
     var memos = [], idx = 0;
 
     for (var key in group) {
-      if (typeof group[key] !== 'function') {
-        result[key] = group[key];
-        continue;
-      }
-
       if ((idx = memos.indexOf(group[key])) !== -1) {
         result[key] = memos[idx];
       } else {
-        curryargs[0] = group[key];
-        result[key] = curryfn.apply(this, curryargs);
-        memos.push(result[key]);
+        if (typeof group[key] === 'object' && recurse && group[key] != null) {
+          var recurseArgs = [ {}, group[key], true, curryfn ];
+          recurseArgs = recurseArgs.concat(curryargs.slice(1));
+          memos.push(result[key] = zomboCrock.apply(this, recurseArgs));
+        } else if (typeof group[key] !== 'function') {
+          result[key] = group[key];
+        } else {
+          curryargs[0] = group[key];
+          result[key] = curryfn.apply(this, curryargs);
+          memos.push(result[key]);
+        }
       }
     }
 
     return result;
   }
 
-  var ub = extendCrock({}, bound, bound.curry(this, bound.curry, null), null);
+  // ub = "unbound". Creates a version of naan that doesn't require a context
+  // argument.
+  var ub = zomboCrock({}, bound, 0, bound.curry(this, bound.curry, null), null);
+
+  var extendCrock = ub.ncurry(zomboCrock, false, 2);
   var crock = ub.curry(extendCrock, false);
+  ub.recursiveExtendCrock = ub.recursiveExtendGroupCurry = 
+    ub.ncurry(zomboCrock, true, 2);
   ub.crock = ub.groupCurry = ub.group = ub.gcurry = crock; 
   ub.extendCrock = ub.ecrock = ub.egroup = ub.egcurry = extendCrock;
+
   ub.b = ub.bound = bound;
 
   ub.extendCombine = ub.ecombine = function(base, target, args, fn) {

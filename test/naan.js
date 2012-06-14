@@ -362,6 +362,26 @@ describe('Crocks/Group Curries', function() {
     assert.equal(cobj._test_thing, 'test');
     assert.equal(cobj._other_thing, 1234);
   });
+
+  it('should perform recursive group currying', function() {
+    var obj = {
+      mv: multivide,
+      sub_thing: {
+        sub: subtract,
+        subsub_thing: {
+          mv: multivide
+        }
+      }
+    };
+    var base = { sub: subtract };
+
+    var cobj = naan.recursiveExtendCrock(base, obj, naan.curry, 10, 12);
+
+    assert.equal(cobj.mv(5, 6), multivide(10, 12, 5, 6));
+    assert.equal(cobj.sub(5, 6), subtract(5, 6));
+    assert.equal(cobj.sub_thing.sub(5, 6), subtract(10, 12, 5, 6));
+    assert.equal(cobj.sub_thing.subsub_thing.mv(8), multivide(10, 12, 8));
+  })
 });
 
 describe('Combine', function() {

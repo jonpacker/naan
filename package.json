@@ -11,7 +11,8 @@
   "main": "naan.js",
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha -R spec",
-    "setup-browser-tests": "git submodule update --init --recursive"
+    "setup-browser-tests": "git submodule update --init --recursive",
+    "minify": "node node_modules/uglify-js/bin/uglifyjs -o naan.min.js naan.js"
   },
   "engines": {
     "node": "~0.6.11"
@@ -20,6 +21,7 @@
     "async": "*"
   },
   "devDependencies": {
-    "mocha": "*"
+    "mocha": "*",
+    "uglify-js": "*"
   }
 }
