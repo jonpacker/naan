@@ -1,5 +1,9 @@
 if (typeof naan == 'undefined') {
-  var naan = require('../naan');
+  var naan;
+  if (process.env.TEST_MINIFIED_VERSION == 'yes')
+    naan = require("../naan.min");
+  else
+    naan = require("../naan");
   var assert = require('assert');
 }
 

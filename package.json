@@ -10,9 +10,9 @@
   },
   "main": "naan.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha -R spec",
+    "test": "node test-both -R spec",
     "setup-browser-tests": "git submodule update --init --recursive",
-    "minify": "node node_modules/uglify-js/bin/uglifyjs -o naan.min.js naan.js"
+    "minify": "node node_modules/uglify-js/bin/uglifyjs --unsafe -o naan.min.js naan.js"
   },
   "engines": {
     "node": "~0.6.11"
